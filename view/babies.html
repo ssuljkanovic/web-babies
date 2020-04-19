@@ -1,0 +1,146 @@
+<h1>Babies</h1>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+    New Baby
+</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addNewBaby">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">New Baby</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Mother</label>
+                        <input type="text" name="fmother" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label><br>
+                        <select name="fgender" class="form-control">
+                            <option selected value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select><br>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label><br>
+                        <input type="date" name="fdate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label><br>
+                        <input type="time" name="ftime" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Height</label><br>
+                        <input type="text" name="fheight" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Weight</label><br>
+                        <input type="text" name="fweight" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Mother</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Height</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody id="table_content">
+    </tbody>
+</table>
+
+
+<script type="text/javascript">
+    get_babies();
+
+    function open_modal() {
+        $('#exampleModalLong').modal('toggle');
+    }
+    $("#addNewBaby").validate({
+        rules: {
+            fmother: {
+                required: true
+            },
+            fdate: {
+                required: true
+            },
+            ftime: {
+                required: true
+            },
+            fheight: {
+                required: true,
+                min: 0
+            },
+            fweight: {
+                required: true,
+                min: 0
+            },
+        },
+
+        submitHandler: function (form, validator) {
+            $.post('rest/v1/babies', $("#addNewBaby").serialize()).done(function () { 
+                toastr.success('New baby added.');
+                $('#exampleModalLong').modal('toggle');
+                get_babies();
+            }).fail(function () {
+                toastr.error('Baby not added');
+            });
+        },
+
+    });
+
+    function get_babies() {
+        $.get("rest/v1/babies", function (data) {   
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += '<tr> <td>' + data[i].ID + '</td>';
+                html += '<td>' + data[i].mothersName + '</td>';
+                html += '<td>' + data[i].gender + '</td>';
+                html += '<td>' + data[i].dateBirth + '</td>';
+                html += '<td>' + data[i].timeBirth + '</td>';
+                html += '<td>' + data[i].height + '</td>';
+                html += '<td>' + data[i].weight + '</td>';
+                html += '<td><button type="button" class="btn btn-danger" onclick="delete_babies(' + data[i].ID + ');">Delete</button></td> </tr>';
+            }
+            $("#table_content").html(html);
+        });
+    }
+    function delete_babies(id) {
+        $.ajax({
+            url: 'rest/v1/babies/' + id,
+            method: 'DELETE',
+            success: function (result) {
+                toastr.success('Deleted');
+                get_babies();
+            },
+            error: function () {
+                toastr.success('Not deleted');
+            }
+        });
+    }
+</script>

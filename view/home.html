@@ -1,0 +1,54 @@
+<figure class="highcharts-figure">
+  <div id="container"></div>
+  <p class="highcharts-description">
+
+  </p>
+</figure>
+<script>
+  var bebies = [];
+  get_baby_count();
+  function get_baby_count() {
+    $.get("rest/v1/baby_count", function (data) {
+      
+      for (var i = 0; i < data.length; i++) {
+        bebies.push([data[i].gender, parseFloat(data[i].count)]);
+      }
+      Highcharts.chart('container', {
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: 'pie'
+        },
+        title: {
+          text: 'Count of babies group by gender.'
+        },
+        tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        accessibility: {
+          point: {
+            valueSuffix: '%'
+          }
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+          }
+        },
+        series: [{
+          name: 'Count',
+          colorByPoint: true,
+          data: bebies
+        }]
+      });
+
+    });
+    console.log(bebies);
+  }
+</script>

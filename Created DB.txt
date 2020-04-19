@@ -1,0 +1,7 @@
+Created!
+You have successfully created a new database. The details are below.
+Username: XNAdCYmAPp
+Database name: XNAdCYmAPp
+Password: E9OiG6uBTR
+Server: remotemysql.com
+Port: 3306
